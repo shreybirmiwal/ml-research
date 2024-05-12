@@ -1,24 +1,20 @@
 import random
 import math
 
-#correct: input * 3 = output
-
 learning_rate = .01
 
 def getCorrect(input):
-    hiddenLayer1 = input * 3
+    hiddenLayer1 = input * 3 + .6
     return hiddenLayer1
 
 def getLossFunction(expected, actual):
-
-    #print("EXP ", expected)
-    #print("ACT ", actual)
-
     return abs(actual-expected)
 
 #initialize the starting weights and bias as random
-layer1_weight = random.randrange(20, 50, 1)
-print("Inital random weight", layer1_weight )
+layer1_weight = random.uniform(20, 50)  
+bias = random.uniform(-10, 10) 
+print("Initial random weight:", layer1_weight)
+print("Initial random bias:", bias)
 
 AverageLoss = 10
 curEpoch = 0
@@ -32,7 +28,7 @@ while(abs(AverageLoss) >= .005):
         expected_out = getCorrect(input_num)
 
         #forward prop
-        predicted_layer1 = input_num * layer1_weight
+        predicted_layer1 = input_num * layer1_weight + bias
 
         #print("input", input_num)
         #print("layer results ", predicted_layer1)
@@ -40,30 +36,27 @@ while(abs(AverageLoss) >= .005):
         #print("loss ", MSE_Loss_Function)
 
         # how much is the weight changing the output and how far are we?
-        upper_bound = getLossFunction(getCorrect(input_num + .01), (input_num+.01)*layer1_weight)
-        lower_bound = getLossFunction(getCorrect(input_num - .01), (input_num-.01)*layer1_weight)
+        #WEIGHT
+        upper_bound = getLossFunction(getCorrect(input_num + 0.01), (input_num + 0.01) * layer1_weight + bias)
+        lower_bound = getLossFunction(getCorrect(input_num - 0.01), (input_num - 0.01) * layer1_weight + bias)
+        approx_slope_weight = (upper_bound - lower_bound) / 0.02
+        layer1_weight += learning_rate * approx_slope_weight
 
-        approx_slope = (upper_bound - lower_bound)/.02
 
-        #print("Approx slope ", approx_slope)
+        #BIAS
+        upper_bound = getLossFunction(getCorrect(input_num), (input_num) * layer1_weight + bias + 0.01)
+        lower_bound = getLossFunction(getCorrect(input_num), (input_num) * layer1_weight + bias - 0.01)
+        approx_slope_bias = (upper_bound - lower_bound) / 0.02
+        bias -= learning_rate * approx_slope_bias
 
-        layer1_weight +=  learning_rate * approx_slope
 
-        #if approx_slope_of_weight > 0:
-        #layer1_weight = learning_rate * approx_slope_of_weight
-            #layer1_weight-=newLearningRate
-
-        #this means the loss func in increasing if we go in + direction
-        #else:
-            #layer1_weight += curLearningRate * approx_slope_of_weight
-            #layer1_weight += newLearningRate   
-
-        #print("updated weights")
 
         curSum += getLossFunction(getCorrect(input_num),predicted_layer1)
 
 
     #break
     AverageLoss = curSum / 100
-    print("EPOCH " + str(curEpoch) + " loss:" + str(AverageLoss) + " Current weight: " + str(layer1_weight))
+
+
+    print("EPOCH " + str(curEpoch) + " loss:" + str(AverageLoss) + " Current weight: " + str(layer1_weight) + " Current bias: " + str(bias))
 
