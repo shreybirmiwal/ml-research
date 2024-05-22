@@ -12,17 +12,18 @@ def getLossFunction(expected, actual):
 
 #initialize the starting weights and bias as random
 layer1_weight = random.uniform(20, 50)  
-bias = random.uniform(-10, 10) 
+bias = random.uniform(-20, 20) 
 print("Initial random weight:", layer1_weight)
 print("Initial random bias:", bias)
 
 AverageLoss = 10
+AverageLoss = 10
 curEpoch = 0
 
-while(abs(AverageLoss) >= .005):
+while(AverageLoss > 0.01):
     curEpoch += 1
     curSum = 0
-    for i in range(10):
+    for i in range(500):
 
         input_num = random.randrange(-10, 10, 1)
         expected_out = getCorrect(input_num)
@@ -36,6 +37,8 @@ while(abs(AverageLoss) >= .005):
         #print("loss ", MSE_Loss_Function)
 
         # how much is the weight changing the output and how far are we?
+        old_weight = layer1_weight
+
         #WEIGHT
         upper_bound = getLossFunction(getCorrect(input_num + 0.01), (input_num + 0.01) * layer1_weight + bias)
         lower_bound = getLossFunction(getCorrect(input_num - 0.01), (input_num - 0.01) * layer1_weight + bias)
@@ -44,8 +47,8 @@ while(abs(AverageLoss) >= .005):
 
 
         #BIAS
-        upper_bound = getLossFunction(getCorrect(input_num), (input_num) * layer1_weight + bias + 0.01)
-        lower_bound = getLossFunction(getCorrect(input_num), (input_num) * layer1_weight + bias - 0.01)
+        upper_bound = getLossFunction(getCorrect(input_num), (input_num) * old_weight + bias + 0.01)
+        lower_bound = getLossFunction(getCorrect(input_num), (input_num) * old_weight + bias - 0.01)
         approx_slope_bias = (upper_bound - lower_bound) / 0.02
         bias -= learning_rate * approx_slope_bias
 
