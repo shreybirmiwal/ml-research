@@ -2,4 +2,6 @@
 /backup/*
 !/backup/.gitkeep
 
+/not-working/backup/*
+
 /working-data-extract/data/*
